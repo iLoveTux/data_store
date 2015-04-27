@@ -97,6 +97,15 @@ def test_sort_works_based_on_key():
     results = _results.order_by("this")
     assert _results.order_by("this")[0]["this"] == "bar"
 
+def test_find_and_find_one_accept_compiled_regex():
+    import re
+    store = _create_store()
+    regex = re.compile("t.*")
+    results = store.find({"this": regex})
+    result = [store.find_one({"this": regex})]
+    assert len(results) == 3
+    assert len(result) == 1
+
 # API TESTS
 
 def test_api_stores_get_returns_names_of_stores():
@@ -134,7 +143,7 @@ def test_api_stores_delete_deletes_store_from_global_stores():
     assert len(data_store.GLOBAL_STORES) == 2
     
 def test_api_stores_store_get_gets_one_or_more_records():
-    body = ""
+    body = '{"name": "test2"}'
     request.environ['CONTENT_LENGTH'] = str(len(tob(body)))
     request.environ['wsgi.input'] = BytesIO()
     request.environ['wsgi.input'].write(tob(body))

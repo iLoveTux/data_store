@@ -1,0 +1,209 @@
+versions pytest-2.6.4, py-1.4.26, python-2.7.8.final.0
+cwd=/home/ilovetux/workspace/data_store/data_store
+args=['--debug']
+
+  finish pytest_cmdline_parse --> <_pytest.config.Config object at 0x7fa1330b9050> [hook]
+pytest_cmdline_main [hook]
+    config: <_pytest.config.Config object at 0x7fa1330b9050>
+  pytest_plugin_registered [hook]
+      manager: <_pytest.config.PytestPluginManager object at 0x7fa13c208690>
+      plugin: <Session 'data_store'>
+  pytest_configure [hook]
+      config: <_pytest.config.Config object at 0x7fa1330b9050>
+    configured with mode set to 'rewrite' [assertion]
+    pytest_plugin_registered [hook]
+        manager: <_pytest.config.PytestPluginManager object at 0x7fa13c208690>
+        plugin: <_pytest.terminal.TerminalReporter instance at 0x7fa13029f0e0>
+  pytest_sessionstart [hook]
+      session: <Session 'data_store'>
+    pytest_plugin_registered [hook]
+        manager: <_pytest.config.PytestPluginManager object at 0x7fa13c208690>
+        plugin: <_pytest.python.FixtureManager instance at 0x7fa132792cb0>
+    pytest_report_header [hook]
+        startdir: /home/ilovetux/workspace/data_store/data_store
+        config: <_pytest.config.Config object at 0x7fa1330b9050>
+      finish pytest_report_header --> [['using: pytest-2.6.4 pylib-1.4.26']] [hook]
+  pytest_collection [hook]
+      session: <Session 'data_store'>
+    perform_collect <Session 'data_store'> ['/home/ilovetux/workspace/data_store/data_store'] [collection]
+      pytest_collectstart [hook]
+          collector: <Session 'data_store'>
+      pytest_make_collect_report [hook]
+          collector: <Session 'data_store'>
+        processing argument /home/ilovetux/workspace/data_store/data_store [collection]
+          pytest_ignore_collect [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/test
+              config: <_pytest.config.Config object at 0x7fa1330b9050>
+          pytest_collect_directory [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/test
+              parent: <Session 'data_store'>
+          pytest_ignore_collect [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/__init__.py
+              config: <_pytest.config.Config object at 0x7fa1330b9050>
+          pytest_collect_file [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/__init__.py
+              parent: <Session 'data_store'>
+          pytest_ignore_collect [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/__init__.pyc
+              config: <_pytest.config.Config object at 0x7fa1330b9050>
+          pytest_collect_file [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/__init__.pyc
+              parent: <Session 'data_store'>
+          pytest_ignore_collect [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/data_store.py
+              config: <_pytest.config.Config object at 0x7fa1330b9050>
+          pytest_collect_file [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/data_store.py
+              parent: <Session 'data_store'>
+          pytest_ignore_collect [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/data_store.pyc
+              config: <_pytest.config.Config object at 0x7fa1330b9050>
+          pytest_collect_file [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/data_store.pyc
+              parent: <Session 'data_store'>
+          pytest_ignore_collect [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/pytestdebug.log
+              config: <_pytest.config.Config object at 0x7fa1330b9050>
+          pytest_collect_file [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/pytestdebug.log
+              parent: <Session 'data_store'>
+          pytest_ignore_collect [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/test/__pycache__
+              config: <_pytest.config.Config object at 0x7fa1330b9050>
+          pytest_collect_directory [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/test/__pycache__
+              parent: <Session 'data_store'>
+          pytest_ignore_collect [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/test/test_Store.py
+              config: <_pytest.config.Config object at 0x7fa1330b9050>
+          pytest_collect_file [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/test/test_Store.py
+              parent: <Session 'data_store'>
+            pytest_pycollect_makemodule [hook]
+                path: /home/ilovetux/workspace/data_store/data_store/test/test_Store.py
+                parent: <Session 'data_store'>
+              finish pytest_pycollect_makemodule --> <Module 'test/test_Store.py'> [hook]
+            finish pytest_collect_file --> [<Module 'test/test_Store.py'>] [hook]
+          pytest_ignore_collect [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/test/__pycache__/test_Store.cpython-27-PYTEST.pyc
+              config: <_pytest.config.Config object at 0x7fa1330b9050>
+          pytest_collect_file [hook]
+              path: /home/ilovetux/workspace/data_store/data_store/test/__pycache__/test_Store.cpython-27-PYTEST.pyc
+              parent: <Session 'data_store'>
+        finish pytest_make_collect_report --> <CollectReport '.' lenresult=1 outcome='passed'> [hook]
+      pytest_collectreport [hook]
+          report: <CollectReport '.' lenresult=1 outcome='passed'>
+    genitems <Module 'test/test_Store.py'> [collection]
+    pytest_collectstart [hook]
+        collector: <Module 'test/test_Store.py'>
+    pytest_make_collect_report [hook]
+        collector: <Module 'test/test_Store.py'>
+      find_module called for: test_Store [assertion]
+      matched test file '/home/ilovetux/workspace/data_store/data_store/test/test_Store.py' [assertion]
+      found cached rewritten pyc for '/home/ilovetux/workspace/data_store/data_store/test/test_Store.py' [assertion]
+      find_module called for: json [assertion]
+      find_module called for: json.decoder [assertion]
+      find_module called for: json.re [assertion]
+      find_module called for: json.sys [assertion]
+      find_module called for: json.struct [assertion]
+      find_module called for: json.json [assertion]
+      find_module called for: json.scanner [assertion]
+      find_module called for: json._json [assertion]
+      find_module called for: _json [assertion]
+      find_module called for: encodings.hex_codec [assertion]
+      find_module called for: encodings.binascii [assertion]
+      find_module called for: json.encoder [assertion]
+      find_module called for: bottle [assertion]
+      find_module called for: base64 [assertion]
+      find_module called for: cgi [assertion]
+      find_module called for: mimetools [assertion]
+      find_module called for: rfc822 [assertion]
+      find_module called for: email [assertion]
+      find_module called for: email.sys [assertion]
+      find_module called for: email.email [assertion]
+      find_module called for: email.mime [assertion]
+      find_module called for: email.utils [assertion]
+      find_module called for: email.os [assertion]
+      find_module called for: email.re [assertion]
+      find_module called for: email.time [assertion]
+      find_module called for: email.base64 [assertion]
+      find_module called for: email.random [assertion]
+      find_module called for: email.socket [assertion]
+      find_module called for: socket [assertion]
+      find_module called for: _socket [assertion]
+      find_module called for: _ssl [assertion]
+      find_module called for: email.urllib [assertion]
+      find_module called for: urllib [assertion]
+      find_module called for: ssl [assertion]
+      find_module called for: email.warnings [assertion]
+      find_module called for: email._parseaddr [assertion]
+      find_module called for: email.calendar [assertion]
+      find_module called for: calendar [assertion]
+      find_module called for: datetime [assertion]
+      find_module called for: email.quopri [assertion]
+      find_module called for: quopri [assertion]
+      find_module called for: email.encoders [assertion]
+      find_module called for: hmac [assertion]
+      find_module called for: mimetypes [assertion]
+      find_module called for: _winreg [assertion]
+      find_module called for: subprocess [assertion]
+      find_module called for: gc [assertion]
+      find_module called for: select [assertion]
+      find_module called for: pickle [assertion]
+      find_module called for: org [assertion]
+      find_module called for: threading [assertion]
+      find_module called for: unicodedata [assertion]
+      find_module called for: simplejson [assertion]
+      find_module called for: decimal [assertion]
+      find_module called for: numbers [assertion]
+      find_module called for: simplejson.scanner [assertion]
+      find_module called for: simplejson.re [assertion]
+      find_module called for: simplejson.simplejson [assertion]
+      find_module called for: simplejson._speedups [assertion]
+      find_module called for: simplejson.decoder [assertion]
+      find_module called for: simplejson.compat [assertion]
+      find_module called for: simplejson.sys [assertion]
+      find_module called for: simplejson.cStringIO [assertion]
+      find_module called for: encodings.unicode_escape [assertion]
+      find_module called for: simplejson.encoder [assertion]
+      find_module called for: httplib [assertion]
+      find_module called for: Cookie [assertion]
+      find_module called for: cPickle [assertion]
+      find_module called for: StringIO [assertion]
+      find_module called for: ConfigParser [assertion]
+      find_module called for: data_store [assertion]
+      finish pytest_make_collect_report --> <CollectReport 'test/test_Store.py' lenresult=0 outcome='failed'> [hook]
+    pytest_exception_interact [hook]
+        node: <Module 'test/test_Store.py'>
+        report: <CollectReport 'test/test_Store.py' lenresult=0 outcome='failed'>
+        call: <CallInfo when='memocollect' exception: /usr/lib/python2.7/site-packages/_pytest/python.py:463: in _importtestmodule
+    mod = self.fspath.pyimport(ensuresyspath=True)
+/usr/lib/python2.7/site-packages/py/_path/local.py:641: in pyimport
+    __import__(modname)
+/usr/lib/python2.7/site-packages/_pytest/assertion/rewrite.py:159: in load_module
+    py.builtin.exec_(co, mod.__dict__)
+test/test_Store.py:8: in <module>
+    from data_store import Store
+E     File "/home/ilovetux/workspace/data_store/data_store/data_store.py", line 82
+E       if hasattr(value, "match"):
+E      ^
+E   IndentationError: expected an indented block>
+    pytest_collectreport [hook]
+        report: <CollectReport 'test/test_Store.py' lenresult=0 outcome='failed'>
+    pytest_collection_modifyitems [hook]
+        items: []
+        session: <Session 'data_store'>
+        config: <_pytest.config.Config object at 0x7fa1330b9050>
+    pytest_collection_finish [hook]
+        session: <Session 'data_store'>
+  pytest_runtestloop [hook]
+      session: <Session 'data_store'>
+    finish pytest_runtestloop --> True [hook]
+  pytest_sessionfinish [hook]
+      session: <Session 'data_store'>
+      exitstatus: 1
+    pytest_terminal_summary [hook]
+        terminalreporter: <_pytest.terminal.TerminalReporter instance at 0x7fa13029f0e0>
+  pytest_unconfigure [hook]
+      config: <_pytest.config.Config object at 0x7fa1330b9050>
+    finish [config:tmpdir]
