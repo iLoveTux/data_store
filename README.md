@@ -28,7 +28,7 @@ or stay up to date by downloading and building yourself
 
 I will go over some of the basic usage here, but if you wish to find more 
 detailed documentation please check out my shared IPython Notebooks on 
-wakari...I will add the address here as soon as I have it.
+wakari: https://wakari.io/sharing/bundle/ilovetux/data.store%20documentation
 
 so, let's check out how to create a basic store, add data to it and 
 search that data.
