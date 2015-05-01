@@ -9,14 +9,13 @@ from data.store import Store
 import data.store
 
 def _create_store():
-    store = Store()
-    store.add_record({"this": "that", "that": "foo"})
-    store.add_record({"this": "that", "that": "bar"})
-    store.add_record({"this": "that", "that": "baz"})
-
-    store.add_record({"this": "foo", "that": "this"})
-    store.add_record({"this": "bar", "that": "this"})
-    store.add_record({"this": "baz", "that": "this"})
+    store = Store(
+        [{"this": "that", "that": "foo"},
+        {"this": "that", "that": "bar"},
+        {"this": "that", "that": "baz"},
+        {"this": "foo", "that": "this"},
+        {"this": "bar", "that": "this"},
+        {"this": "baz", "that": "this"}])
     return store
 
 def test_Store_returns_empty_store():
@@ -66,6 +65,17 @@ def test_find_returns_list_of_matching_records():
     
     result = store.find({"this": "that"})
     assert len(result) == 3
+
+def test_find_and_find_one_accept_a_callable_as_a_matching_value():
+    store = _create_store()
+    results = store.find({
+        "this": lambda x: x.startswith("t")
+    })
+    assert len(results) == 3
+    result = store.find({
+        "this": lambda x: x.startswith("t")
+    })
+    assert len([result]) == 1
 
 def test_persist_will_persist_to_file_and_can_be_read_by_load():
     filename = os.path.join(tempfile.gettempdir(), "testdb")

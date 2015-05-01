@@ -74,6 +74,9 @@ class Store(list):
                 if hasattr(value, "match"):
                     if not value.match(item.get(key, None)):
                         break
+                elif callable(value):
+                    if not value(item[key]):
+                        break
                 else:
                     if not value == item[key]:
                         break
@@ -87,6 +90,9 @@ class Store(list):
             for key, value in desc.items():
                 if hasattr(value, "match"):
                     if not value.match(item.get(key, None)):
+                        break
+                elif callable(value):
+                    if not value(item[key]):
                         break
                 else:
                     if not value == item.get(key, None):
