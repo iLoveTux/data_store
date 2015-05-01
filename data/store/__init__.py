@@ -66,7 +66,7 @@ class Store(list):
             self.remove(record)
         return records
     
-    def find_one(self, desc):
+    def find_one(self, desc, sanitize_list=None):
         """Returns one record matching desc, if more than one record
         matches desc returns the first one."""
         for item in self:
@@ -81,9 +81,14 @@ class Store(list):
                     if not value == item[key]:
                         break
             else:
-                return item
+                _item = item
+                if sanitize_list:
+                    for key in sanitize_list:
+                        if item.get(key, None):
+                            _item[key] = "*" * 8
+                return _item
     
-    def find(self, desc):
+    def find(self, desc, sanitize_list=None):
         """Returns all records matching desc."""
         ret = ResultSet()
         for item in self:
@@ -98,7 +103,14 @@ class Store(list):
                     if not value == item.get(key, None):
                         break
             else:
-                ret.append(item)
+                # Needed to account for changing the actual store,
+                # Rather than just sanitizing the ResultSet
+                ret.append(item.copy())
+        for index, record in enumerate(list(ret)):
+            if sanitize_list:
+                for field in sanitize_list:
+                    if record.get(field, None):
+                        ret[index][field] = "*" * 8
         return ret
     
     def persist(self, filename):
@@ -214,7 +226,6 @@ def get_record(store):
     
     # Get the description of the desired record
     desc = bottle.request.query.get("desc", default="{}")
-    print desc
     desc = json.loads(desc)
     
     # Get the limit of records to return (-1 means no limit)

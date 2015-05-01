@@ -77,6 +77,21 @@ def test_find_and_find_one_accept_a_callable_as_a_matching_value():
     })
     assert len([result]) == 1
 
+def test_find_and_find_one_accept_sanitize_list_argument_and_sanitizes_those_fields():
+    store = _create_store()
+    results = store.find(
+        {"this": "that"},
+        sanitize_list=["this"])
+    print "RESULTS: ", results
+    print "STORE:", store
+    for result in results:
+        assert result["this"] == "*" * 8
+    result = store.find_one(
+        {"this": "that"},
+        sanitize_list=["this"])
+    print "RESULT:", result
+    assert result["this"] == "*" * 8
+
 def test_persist_will_persist_to_file_and_can_be_read_by_load():
     filename = os.path.join(tempfile.gettempdir(), "testdb")
     store = _create_store()
