@@ -38,9 +38,9 @@ import data.store
 
 # Instanciate a Store with four records
 store = data.store.Store([
-    {"name": "John Doe", "email": "john@doe.com"}
-    {"name": "Jim Doe", "email": "jim@doe.com"}
-    {"name": "Robert Doe", "email": "robert@doe.com"}
+    {"name": "John Doe", "email": "john@doe.com"},
+    {"name": "Jim Doe", "email": "jim@doe.com"},
+    {"name": "Robert Doe", "email": "robert@doe.com"},
     {"name": "Melissa Doe", "email": "melissa@doe.com"}
 ])
 
@@ -75,7 +75,7 @@ store2 = data.store.load("/var/data/users.db")
 
 # Find a set of records and sanitize a field on them
 store2.find(
-    {"name": lambda x: x.startswith("J")},
+    {"email": lambda x: x.startswith("m")},
     sanitize_list=["email"])
 ```
 

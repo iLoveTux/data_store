@@ -1,9 +1,0 @@
-setup.py
-data/__init__.py
-data.store.egg-info/PKG-INFO
-data.store.egg-info/SOURCES.txt
-data.store.egg-info/dependency_links.txt
-data.store.egg-info/requires.txt
-data.store.egg-info/top_level.txt
-data/store/__init__.py
-test/test_Store.py

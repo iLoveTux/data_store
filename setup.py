@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='data.store',
-      version='0.6.2',
+      version='0.6.3',
       description='A MongoDB inspired data_store',
       author='iLoveTux',
       author_email='me@ilovetux.com',
