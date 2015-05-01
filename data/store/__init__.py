@@ -31,14 +31,16 @@ class ResultSet(list):
         return sorted(self, key=lambda k: k[key])
 
 class Store(list):
-    def __init__(self):
+    def __init__(self, records=None):
         """
         This class is meant to be a parallel to a table in a
         traditional DataBase. It inherits from list and contains
         dicts which we call records.
         """
-        pass
-    
+        if records:
+            for record in records:
+                self.add_record(record)
+
     def add_record(self,record):
         """This method adds a record to this Store. record should be
         a dict. There is no schema in data_store, so feel free to add
