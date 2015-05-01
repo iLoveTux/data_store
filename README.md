@@ -13,16 +13,16 @@ a simple mongo-esque data_store.
 
 Simply run
 
-$ pip install data.store
+    $ pip install data.store
 
 or stay up to date by downloading and building yourself
 
-$ cd /tmp
-$ wget https://github.com/iLoveTux/data_store/archive/master.zip
-$ unzip master.zip
-$ cd data_store-master/
-$ py.test  # optionally run the tests
-$ python setup.py install
+    $ cd /tmp
+    $ wget https://github.com/iLoveTux/data_store/archive/master.zip
+    $ unzip master.zip
+    $ cd data_store-master/
+    $ py.test  # optionally run the tests
+    $ python setup.py install
 
 ## Basic Usage
 
