@@ -100,7 +100,11 @@ class Store(list):
     
     def del_records(self, desc):
         """This acts just as del_record except that it will happily
-        delete any number of records matching desc."""
+        delete any number of records matching desc.
+        
+        >>> print "finish docstrings"
+        >>> print "hello"
+        """
         records = self.find(desc)
         for record in records:
             self.remove(record)
