@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 # data_store
 
@@ -25,35 +26,74 @@ import json
 import uuid
 import pickle
 import bottle
+#from threading import RLock
 
-class ResultSet(list):
+class ResultList(list):
     def order_by(self, key):
         return sorted(self, key=lambda k: k[key])
 
 class Store(list):
     def __init__(self, records=None):
-        """
-        This class is meant to be a parallel to a table in a
+        """This class is meant to be a parallel to a table in a
         traditional DataBase. It inherits from list and contains
         dicts which we call records.
-        """
+
+        If you pass in a list of dicts then they will be used to
+        initialize your store with records.
+        
+        >>> store = Store([{'this': 'that'}])
+        >>> store2 = Store()
+        >>> store2.add_record(store.find_one({'this': 'that'}))  #doctest: +ELLIPSIS
+        {'this': 'that', '_id':...}
+        >>> store == store2
+        True"""
+        #self.lock = RLock()
         if records:
             for record in records:
                 self.add_record(record)
 
-    def add_record(self,record):
+    def add_record(self, record):
         """This method adds a record to this Store. record should be
         a dict. There is no schema in data_store, so feel free to add
-        any valid Python dict."""
-        if not hasattr(record, "_id"):
+        any valid Python dict.
+        
+        Every record in data.store must have a unique value for
+        the field '_id', if you don't provide one then one will
+        be generated.
+        
+        This method returns the record you passed in, but
+        with the '_id' field added if it wasn't present.
+        
+        >>> store = Store()
+        >>> store
+        []
+        >>> store.add_record({'this': 'that', '_id': 'test'})
+        {'this': 'that', '_id': 'test'}
+        >>> store
+        [{'this': 'that', '_id': 'test'}]
+        """
+        if "_id" not in record:
             record["_id"] = uuid.uuid4().hex
         self.append(record)
+        return record
     
     def del_record(self, desc):
         """This will delete a record from this Store matching desc
         as long as desc only matches one record, otherwise raise a
-        ValueError."""
+        ValueError. The record which was deleted is returned to you.
+        
+        >>> store = Store([{'_id': 'that'}])
+        >>> store
+        [{'_id': 'that'}]
+        >>> store.del_record({'_id': 'that'})
+        {'_id': 'that'}
+        >>> store
+        []
+        """
         record = self.find_one(desc)
+        records = self.find(desc)
+        if [record] != records:
+            raise ValueError("{} matches more than one record! Aborting...".format(str(desc)))
         if record:
             self.remove(record)
         return record
@@ -90,7 +130,7 @@ class Store(list):
     
     def find(self, desc, sanitize_list=None):
         """Returns all records matching desc."""
-        ret = ResultSet()
+        ret = ResultList()
         for item in self:
             for key, value in desc.items():
                 if hasattr(value, "match"):
@@ -104,7 +144,7 @@ class Store(list):
                         break
             else:
                 # Needed to account for changing the actual store,
-                # Rather than just sanitizing the ResultSet
+                # Rather than just sanitizing the ResultList
                 ret.append(item.copy())
         for index, record in enumerate(list(ret)):
             if sanitize_list:
@@ -115,6 +155,7 @@ class Store(list):
     
     def persist(self, filename):
         """Persist current data_store to a file named filename"""
+        #with self.lock:
         with open(filename, "wb") as fout:
             pickle.dump(self, fout)
     
@@ -293,6 +334,10 @@ def persist():
     filename = bottle.request.query.get("filename", "globstore")
     filename = os.path.join(DB_PATH, filename)
     persist_global_stores(filename)
+
+__tests__ = [
+    Store.__init__,
+]
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

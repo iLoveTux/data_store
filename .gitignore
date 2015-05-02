@@ -2,3 +2,7 @@
 data.store.egg-info/PKG-INFO
 data.store.egg-info/requires.txt
 dist/
+
+*.log
+
+*.db

@@ -6,6 +6,7 @@ import bottle
 from io import BytesIO
 sys.path.insert(0, os.getcwd())
 from data.store import Store
+import pytest
 import data.store
 
 def _create_store():
@@ -17,6 +18,44 @@ def _create_store():
         {"this": "bar", "that": "this"},
         {"this": "baz", "that": "this"}])
     return store
+
+#def test_add_record_is_thread_safe():
+    #"""Come to think of it...The GIL makes this never fail"""
+    #from multiprocessing import Process
+    
+    #store = _create_store()
+    #def add_delete():
+        #for x in xrange(100000):
+            #sx = str(x)
+            #record = store.add_record({"name": sx, "email": "{}@example.com".format(sx)})
+            #store.del_record(record)
+    
+    
+    #procs = [Process(target=add_delete) for x in xrange(100000)]
+    #[process.start() for process in procs]
+    #[process.join() for process in procs]
+    #assert len(store) == 6
+    
+#def test_persist_is_thread_safe():
+    #"""Now, this I think could fail"""
+    #from threading import Thread
+    
+    #store = _create_store()
+    #class Task(Thread):
+        #def run(self):
+            ## I have tried this with values as high as 100
+            #for x in xrange(10):
+                #sx = str(x)
+                #record = store.add_record({"name": sx, "email": sx})
+                #store.persist("tmp.db")
+                #store.del_record(record)
+                #store.persist("tmp.db")
+    ## I have tried this with values as high as 100
+    #tasks = [Task() for x in xrange(10)]
+    #[task.start() for task in tasks]
+    #[task.join() for task in tasks]
+    #store2 = data.store.load("tmp.db")
+    #assert store == store2
 
 def test_Store_returns_empty_store():
     store = Store()
@@ -44,6 +83,11 @@ def test_del_record_removes_a_record():
     assert len(store) == 1
     store.del_record({"this": "that", "that": "foo"})
     assert len(store) == 0
+
+def test_del_record_raises_ValueError_if_record_doesnt_exist():
+    store = _create_store()
+    with pytest.raises(ValueError):
+        store.del_record({"_id": 1})
 
 def test_del_records_removes_all_matching_records():
     store = _create_store()
