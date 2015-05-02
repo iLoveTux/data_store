@@ -21,7 +21,7 @@ or stay up to date by downloading and building yourself
     $ wget https://github.com/iLoveTux/data_store/archive/master.zip
     $ unzip master.zip
     $ cd data_store-master/
-    $ py.test  # optionally run the tests
+    $ py.test --doctest-modules --ignore=setup.py  # optionally run the tests
     $ python setup.py install
 
 ## Basic Usage
