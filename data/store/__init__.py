@@ -26,11 +26,12 @@ import json
 import uuid
 import pickle
 import bottle
-#from threading import RLock
+from threading import RLock
+
+LOCKS = {}
 
 class ResultList(list):
-    def order_by(self, key):
-        return sorted(self, key=lambda k: k[key])
+    pass
 
 class Store(list):
     def __init__(self, records=None):
@@ -47,7 +48,6 @@ class Store(list):
         {'this': 'that', '_id':...}
         >>> store == store2
         True"""
-        #self.lock = RLock()
         if records:
             for record in records:
                 self.add_record(record)
@@ -100,10 +100,15 @@ class Store(list):
     
     def del_records(self, desc):
         """This acts just as del_record except that it will happily
-        delete any number of records matching desc.
+        delete any number of records matching desc. The records which
+        were deleted are returned.
         
-        >>> print "finish docstrings"
-        >>> print "hello"
+        >>> store = Store([
+        ...     {'this': 'that', '_id': 'test1'},
+        ...     {'this': 'that', '_id': 'test2'},
+        ...     {'this': 'that', '_id': 'test3'}])
+        >>> store.del_records({'this': 'that'})
+        [{'this': 'that', '_id': 'test1'}, {'this': 'that', '_id': 'test2'}, {'this': 'that', '_id': 'test3'}]
         """
         records = self.find(desc)
         for record in records:
@@ -112,7 +117,32 @@ class Store(list):
     
     def find_one(self, desc, sanitize_list=None):
         """Returns one record matching desc, if more than one record
-        matches desc returns the first one."""
+        matches desc returns the first one.
+        
+        desc should be a dict whose keys eveluate to one of the
+        following:
+        
+        1. A value which will be tested for equality against the
+        value the key in each record in the store.
+        2. A compiled regular expression object (ie like the
+        value returned by re.compile). Each record in the store
+        will be tested for a match against the regex for the value of
+        key
+        3. A callable which accepts one argument (the value of key in
+        the current record) and returns True or False depending on
+        whether the record should be included in the result set. 
+
+        If sanitize_list is specified then it must be an iterable
+        which contains values which when found as a key in a record
+        will sanitize the value of that field in the result set.
+
+        >>> store = Store([
+        ...     {'this': 'that', '_id': 'test1'},
+        ...     {'this': 'that', '_id': 'test2'},
+        ...     {'this': 'that', '_id': 'test3'}])
+        >>> store.find_one({'this': 'that'})
+        {'this': 'that', '_id': 'test1'}
+        """
         for item in self:
             for key, value in desc.items():
                 if hasattr(value, "match"):
@@ -131,9 +161,23 @@ class Store(list):
                         if item.get(key, None):
                             _item[key] = "*" * 8
                 return _item
-    
-    def find(self, desc, sanitize_list=None):
-        """Returns all records matching desc."""
+
+    def find(self, desc, sanitize_list=None, order_by=None):
+        """Returns a ResultList containing records matching
+        desc. If sanitize_list is specified it should be an iterable
+        yielding keys of fields you would like sanitized. Those fields
+        will be set to a value of '********'.
+        
+        desc should follow the same rules as defined above in the
+        docstring for find_one.
+        
+        >>> store = Store([
+        ...     {'this': 'that', '_id': 'test1'},
+        ...     {'this': 'that', '_id': 'test2'},
+        ...     {'this': 'that', '_id': 'test3'}])
+        >>> store.find({'this': 'that'})
+        [{'this': 'that', '_id': 'test1'}, {'this': 'that', '_id': 'test2'}, {'this': 'that', '_id': 'test3'}]
+        """
         ret = ResultList()
         for item in self:
             for key, value in desc.items():
@@ -155,195 +199,49 @@ class Store(list):
                 for field in sanitize_list:
                     if record.get(field, None):
                         ret[index][field] = "*" * 8
+        if order_by is not None:
+            ret = sorted(ret, key=lambda k: k[order_by])
         return ret
-    
+
     def persist(self, filename):
-        """Persist current data_store to a file named filename"""
-        #with self.lock:
-        with open(filename, "wb") as fout:
-            pickle.dump(self, fout)
-    
+        """Persist current data_store to a file named filename.
+        A RLock from the threading module is used (unique by
+        filename) to ensure thread safety.
+        
+        >>> store = Store([
+        ...     {'this': 'that', '_id': 'test1'},
+        ...     {'this': 'that', '_id': 'test2'},
+        ...     {'this': 'that', '_id': 'test3'}])
+        >>> store.persist("test.db")
+        >>> store2 = load("test.db")
+        >>> store == store2
+        True
+        """
+        global LOCKS
+        if filename not in LOCKS:
+            LOCKS[filename] = RLock()
+        with LOCKS[filename]:
+            with open(filename, "wb") as fout:
+                pickle.dump(self, fout)
+
 def load(filename):
     """Returns a data_store loaded from a file to which it
-    was persisted"""
+    was persisted
+    
+    >>> store = Store([
+    ...     {'this': 'that', '_id': 'test1'},
+    ...     {'this': 'that', '_id': 'test2'},
+    ...     {'this': 'that', '_id': 'test3'}])
+    >>> store.persist("test.db")
+    >>> store2 = load("test.db")
+    >>> store == store2
+    True
+    """
     with open(filename, "rb") as fin:
         store = pickle.load(fin)
     return store
 
-def add_to_global_stores(name, store):
-    global GLOBAL_STORES
-    GLOBAL_STORES[name] = store
-
-def remove_from_global_stores(name):
-    global GLOBAL_STORES
-    del GLOBAL_STORES[name]
-
-def persist_global_stores(filename):
-    global GLOBAL_STORES
-    with open(filename, "wb") as fout:
-        pickle.dump(GLOBAL_STORES, fout)
-
-def load_global_stores(filename):
-    global GLOBAL_STORES
-    with open(filename, "rb")as fin:
-        GLOBAL_STORES = pickle.load(fin)
-
-global GLOBAL_STORES
-GLOBAL_STORES = {}
-global DB_PATH
-DB_PATH = "/tmp"
-
 default_store = Store()
 
-##
-#
-# The API
-# =======
-#
-# REST
-#
-# Each endpoint and it's purpose is listed below. The behavior of
-# these endpoints can be modified through parameters passed in through
-# the request. For more information on the parameters accepted at each
-# endpoint please consult the endpoint's docstring.
-#
-# NOTE: The REST API will only work for stores in GLOBAL_STORES.
-#
-# Endpoint            Method            Description
-# =====================================================================
-# 
-# /stores            GET                Return a list of stores
-# /stores            POST            Create a new store
-# /stores            DELETE            Deletes a store
-#
-# /stores/<store>     GET                Search for record(s) in store
-# /stores/<store>    POST            Add a record to store
-# /stores/<store>    PUT                Modify a record from store
-# /stores/<store>    DELETE             Remove record(s) from store
-#
-# /persist            POST            Persist GLOBAL_STORES as they are
-#
-# =====================================================================
-
-api = bottle.Bottle(__name__)
-
-@api.route("/stores")
-def get_stores():
-    global GLOBAL_STORES
-    stores = GLOBAL_STORES
-    names = stores.keys()
-
-    bottle.response.content_type = "application/json"
-    return json.dumps(names)
-
-@api.route("/stores", method="POST")
-def post_stores():
-    global GLOBAL_STORES
-    stores = GLOBAL_STORES
-    name = bottle.request.params.get("name")
-    store = Store()
-    add_to_global_stores(name, store)
-    bottle.response.content_type = "application/json"
-    return json.dumps(store)
-
-@api.route("/stores", method="DELETE")
-def delete_store():
-    global GLOBAL_STORES
-    stores = GLOBAL_STORES
-    name = bottle.request.params.get("name")
-    store = stores[name]
-    remove_from_global_stores(name)
-    bottle.response.content_type = "application/json"
-    return json.dumps(store)
-
-@api.route("/stores/<store>")
-def get_record(store):
-    """This endpoint allows searching through a store in GLOBAL_STORES.
-    The following query parameters are supported (all others are
-    ignored):
-    
-    * desc - a JSON string representing a spec with which to search
-    through the records (defaults to matching all records).
-    * limit - A limit on the number of records to return (defaults to
-    -1 or no limit)"""
-    global GLOBAL_STORES
-    stores = GLOBAL_STORES
-    
-    # Get the description of the desired record
-    desc = bottle.request.query.get("desc", default="{}")
-    desc = json.loads(desc)
-    
-    # Get the limit of records to return (-1 means no limit)
-    limit = bottle.request.query.get("limit", default=-1, type=int)
-    results = stores[store].find(desc)
-    
-    # For some reason bottle isn't allowing me to just return
-    # the data structure for automatic conversion to JSON.This
-    # is a work-around.
-    bottle.response.content_type = "application/json"
-    return json.dumps(results[0:limit])
-
-@api.route("/stores/<store>",method="POST")
-def post_record(store):
-    global GLOBAL_STORES
-    global DB_PATH
-    stores = GLOBAL_STORES
-    
-    # Get the body of the post (should be JSON)
-    body = bottle.request.json
-    persist = bottle.request.query.get("persist", False)
-    filename = bottle.request.query.get("filename", "globstore")
-    filename = os.path.join(DB_PATH, filename)
-    
-    stores[store].add_record(body)
-    bottle.request.content_type = "application/json"
-    if persist:
-        persist_global_stores(filename)
-    return json.dumps(body)
-
-@api.route("/stores/<store>", method="PUT")
-def put_record(store):
-    global GLOBAL_STORES
-    stores = GLOBAL_STORES
-    
-    body = bottle.request.params.get("body")
-    body = json.loads(body)
-    
-    desc = bottle.request.params.get("desc", default="{}")
-    desc = json.loads(desc)
-    
-    result = stores[store].find_one(desc)
-    stores[store][stores[store].index(result)] = body
-    bottle.request.content_type = "application/json"
-    return json.dumps(body)
-
-@api.route("/stores/<store>", method="DELETE")
-def delete_record(store):
-    global GLOBAL_STORES
-    stores = GLOBAL_STORES
-    desc = bottle.request.params.get("desc", default="{}")
-    desc = json.loads(desc)
-    
-    limit = bottle.request.params.get("limit", default=-1, type=int)
-    results = stores[store].find(desc)
-    results = results[0:limit]
-    for result in results:
-        stores[store].del_record(result)
-    bottle.request.content_type = "application/json"
-    return json.dumps(results)
-
-@api.route("/persist", method="POST")
-def persist():
-    global DB_PATH
-    filename = bottle.request.query.get("filename", "globstore")
-    filename = os.path.join(DB_PATH, filename)
-    persist_global_stores(filename)
-
-__tests__ = [
-    Store.__init__,
-]
-
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        load_global_stores(sys.argv[1])
-    api.run(host="0.0.0.0", port=4050, debug=True)
+    pass
