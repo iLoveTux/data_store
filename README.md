@@ -79,6 +79,78 @@ store2.find(
     sanitize_list=["email"])
 ```
 
+## The REST API
+
+A REST API is included in the package for convenience. The
+API is a WSGI application written in bottle, and supports
+full CRUD operations on records and collections (or Stores
+as I have been calling them).
+
+#### Using the REST APIy
+
+The REST API provides the following endpoints:
+
+##### Collection endpoints
+
+GET    -> /collections              = list all collections available
+
+POST   -> /collections/<collection> = Creates a new collection
+
+DELETE -> /collections/<collection> = Deletes a collection
+
+##### Record endpoints
+
+GET    -> /collections/<collection>/records = get a list of records
+       matching the keys and values passed through the query string.
+
+POST   -> /collections/<collection>/records = adds a record to collection
+
+DELETE -> /collections/<collection>/records = deletes a record
+
+PUT    -> /collections/<collection>/records/_id = Update a record
+
+#### Deploying the REST API
+Deployment is relatively easy, and could consist of the
+following:
+
+```python
+from data.store.api import api
+
+api.run(server="cherrypy")
+```
+
+or to use a different server (in this case twisted):
+
+```python
+from data.store.api import api
+
+api.run(server="twisted")
+```
+
+then save either of these files as datastore_api.py
+and run
+
+    $ python datastore_api.py
+
+and by default the server will listen on port 8080.
+
+Now, This is one way to deploy it, there are others,
+here are some links pointing to some documentation
+about deploying WSGI applications (and bottle WSGI
+applications in particular):
+
+To see a list of available servers, check out:
+http://bottlepy.org/docs/dev/deployment.html#switching-the-server-backend
+
+or to see how to deploy it behind Apache httpd check out:
+http://bottlepy.org/docs/dev/deployment.html#apache-mod-wsgi
+
+or on google app engine:
+http://bottlepy.org/docs/dev/deployment.html#google-appengine
+
+or for some info on deploying behind a load balancer:
+http://bottlepy.org/docs/dev/deployment.html#load-balancer-manual-setup
+
 ## Help and Contributions
 
 Please feel free to open an issue here on GitHub.
