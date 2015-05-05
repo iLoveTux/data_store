@@ -8,3 +8,4 @@ dist/
 *.db
 .setup.py.swp
 data.store.egg-info/
+README.rst
