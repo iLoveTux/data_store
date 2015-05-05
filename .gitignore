@@ -6,3 +6,5 @@ dist/
 *.log
 
 *.db
+.setup.py.swp
+data.store.egg-info/
