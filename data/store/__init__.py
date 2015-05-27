@@ -87,6 +87,17 @@ class Store(list):
             ret.del_record({"_id": match["_id"]})
         return ret
 
+    def group_by(self, by):
+        groups = {}
+        for record in self:
+            if record[by] in groups:
+                groups[record[by]].append(record)
+            else:
+                groups[record[by]] = [record]
+        for k,v in dict(groups).items():
+            groups[k] = Store(v)
+        return groups
+
     def del_record(self, desc):
         """This will delete a record from this Store matching desc
         as long as desc only matches one record, otherwise raise a
