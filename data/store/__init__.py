@@ -80,6 +80,13 @@ class Store(list):
     def sort(self, by="_id"):
         return self.find({}, order_by=by)
 
+    def filter(self, desc):
+        matches = self.find(desc)
+        ret = self.find({})
+        for match in list(matches):
+            ret.del_record({"_id": match["_id"]})
+        return ret
+
     def del_record(self, desc):
         """This will delete a record from this Store matching desc
         as long as desc only matches one record, otherwise raise a

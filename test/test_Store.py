@@ -75,6 +75,12 @@ def test_Store_dot_sort_returns_a_sorted_store():
     assert isinstance(srted, Store)
     assert srted[0]["this"] == "bar"
 
+def test_Store_dot_filter_returns_new_store_with_matching_records_removed():
+    store = _create_store()
+    filtered = store.filter({"this": "bar"})
+    assert len(filtered) == ( len(store) - 1)
+    assert len(filtered.find({"this": "bar"})) == 0
+
 def test_add_record_adds_a_record():
     store = Store()
 
