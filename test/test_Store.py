@@ -199,6 +199,15 @@ def test_persist_will_persist_to_file_and_can_be_read_by_load():
     assert store == store2
 
 
+def test_persist_will_accept_a_password_to_encrypt_the_store():
+    store = _create_store()
+    store.persist("test.db", password="password")
+    with pytest.raises(KeyError):
+        store2 = data.store.load("test.db")
+    store3 = data.store.load("test.db", password="password")
+    assert store3 == store
+
+
 def test_sort_works_based_on_key():
     store = _create_store()
     results = store.find({}, order_by="this")

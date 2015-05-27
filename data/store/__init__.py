@@ -26,6 +26,7 @@ import json
 import uuid
 import pickle
 import bottle
+from cStringIO import StringIO
 from threading import RLock
 import base64
 from itertools import cycle, izip
@@ -252,7 +253,7 @@ class Store(list):
             ret = sorted(ret, key=lambda k: k[order_by])
         return Store(ret)
 
-    def persist(self, filename):
+    def persist(self, filename, password=None):
         """Persist current data_store to a file named filename.
         A RLock from the threading module is used (unique by
         filename) to ensure thread safety.
@@ -272,8 +273,15 @@ class Store(list):
         with LOCKS[filename]:
             with open(filename, "wb") as fout:
                 pickle.dump(self, fout)
+            if password:
+                with open(filename, "rb") as fin:
+                    contents = fin.read()
+                contents = encrypt(contents, key=password)
+                with open(filename, "wb") as fout:
+                    fout.write(contents)
 
-def load(filename):
+
+def load(filename, password=None):
     """Returns a data_store loaded from a file to which it
     was persisted
 
@@ -286,8 +294,17 @@ def load(filename):
     >>> store == store2
     True
     """
-    with open(filename, "rb") as fin:
-        store = pickle.load(fin)
+    if password:
+        with open(filename, "rb") as fin:
+            contents = fin.read()
+            contents = decrypt(contents, key=password)
+        f = StringIO()
+        f.write(contents)
+        f.seek(0)
+        store = pickle.load(f)
+    else:
+        with open(filename, "rb") as fin:
+            store = pickle.load(fin)
     return store
 
 default_store = Store()
