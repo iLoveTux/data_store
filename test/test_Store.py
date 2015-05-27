@@ -22,24 +22,24 @@ def _create_store():
 def test_add_record_is_thread_safe():
     """Come to think of it...The GIL makes this never fail"""
     from multiprocessing import Process
-    
+
     store = _create_store()
     def add_delete():
         for x in xrange(10):
             sx = str(x)
             record = store.add_record({"name": sx, "email": "{}@example.com".format(sx)})
             store.del_record(record)
-    
-    
+
+
     procs = [Process(target=add_delete) for x in xrange(10)]
     [process.start() for process in procs]
     [process.join() for process in procs]
     assert len(store) == 6
-    
+
 def test_persist_is_thread_safe():
     """Now, this I think could fail"""
     from threading import Thread
-    
+
     store = _create_store()
     class Task(Thread):
         def run(self):
@@ -63,11 +63,17 @@ def test_Store_returns_empty_store():
 def test_Store_constructor_accepts_a_list_of_dicts_to_initialize():
     store = Store([{}, {}])
     assert len(store) == 2
-    
+
 def test_Store_constructor_adds__id_field_to_each_record():
     store = Store([{}, {}])
     for record in store:
         assert "_id" in record
+
+def test_Store_dot_sort_returns_a_sorted_store():
+    store = _create_store()
+    srted = store.sort("this")
+    assert isinstance(srted, Store)
+    assert srted[0]["this"] == "bar"
 
 def test_add_record_adds_a_record():
     store = Store()
@@ -90,7 +96,7 @@ def test_del_record_raises_ValueError_if_record_doesnt_exist():
 
 def test_del_records_removes_all_matching_records():
     store = _create_store()
-    
+
     assert len(store) == 6
     store.del_records({"this": "that"})
     assert len(store) == 3
@@ -99,13 +105,13 @@ def test_del_records_removes_all_matching_records():
 
 def test_find_one_only_returns_one_record():
     store = _create_store()
-    
+
     result = store.find_one({"this": "that"})
     assert isinstance(result, dict)
 
 def test_find_returns_list_of_matching_records():
     store = _create_store()
-    
+
     result = store.find({"this": "that"})
     assert len(result) == 3
 

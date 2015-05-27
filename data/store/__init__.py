@@ -41,7 +41,7 @@ class Store(list):
 
         If you pass in a list of dicts then they will be used to
         initialize your store with records.
-        
+
         >>> store = Store([{'this': 'that'}])
         >>> store2 = Store()
         >>> store2.add_record(store.find_one({'this': 'that'}))  #doctest: +ELLIPSIS
@@ -56,14 +56,14 @@ class Store(list):
         """This method adds a record to this Store. record should be
         a dict. There is no schema in data_store, so feel free to add
         any valid Python dict.
-        
+
         Every record in data.store must have a unique value for
         the field '_id', if you don't provide one then one will
         be generated.
-        
+
         This method returns the record you passed in, but
         with the '_id' field added if it wasn't present.
-        
+
         >>> store = Store()
         >>> store
         []
@@ -76,12 +76,15 @@ class Store(list):
             record["_id"] = uuid.uuid4().hex
         self.append(record)
         return record
-    
+
+    def sort(self, by="_id"):
+        return self.find({}, order_by=by)
+
     def del_record(self, desc):
         """This will delete a record from this Store matching desc
         as long as desc only matches one record, otherwise raise a
         ValueError. The record which was deleted is returned to you.
-        
+
         >>> store = Store([{'_id': 'that'}])
         >>> store
         [{'_id': 'that'}]
@@ -97,12 +100,12 @@ class Store(list):
         if record:
             self.remove(record)
         return record
-    
+
     def del_records(self, desc):
         """This acts just as del_record except that it will happily
         delete any number of records matching desc. The records which
         were deleted are returned.
-        
+
         >>> store = Store([
         ...     {'this': 'that', '_id': 'test1'},
         ...     {'this': 'that', '_id': 'test2'},
@@ -114,14 +117,14 @@ class Store(list):
         for record in records:
             self.remove(record)
         return records
-    
+
     def find_one(self, desc, sanitize_list=None):
         """Returns one record matching desc, if more than one record
         matches desc returns the first one.
-        
+
         desc should be a dict whose keys eveluate to one of the
         following:
-        
+
         1. A value which will be tested for equality against the
         value the key in each record in the store.
         2. A compiled regular expression object (ie like the
@@ -130,7 +133,7 @@ class Store(list):
         key
         3. A callable which accepts one argument (the value of key in
         the current record) and returns True or False depending on
-        whether the record should be included in the result set. 
+        whether the record should be included in the result set.
 
         If sanitize_list is specified then it must be an iterable
         which contains values which when found as a key in a record
@@ -167,10 +170,10 @@ class Store(list):
         desc. If sanitize_list is specified it should be an iterable
         yielding keys of fields you would like sanitized. Those fields
         will be set to a value of '********'.
-        
+
         desc should follow the same rules as defined above in the
         docstring for find_one.
-        
+
         >>> store = Store([
         ...     {'this': 'that', '_id': 'test1'},
         ...     {'this': 'that', '_id': 'test2'},
@@ -201,13 +204,13 @@ class Store(list):
                         ret[index][field] = "*" * 8
         if order_by is not None:
             ret = sorted(ret, key=lambda k: k[order_by])
-        return ret
+        return Store(ret)
 
     def persist(self, filename):
         """Persist current data_store to a file named filename.
         A RLock from the threading module is used (unique by
         filename) to ensure thread safety.
-        
+
         >>> store = Store([
         ...     {'this': 'that', '_id': 'test1'},
         ...     {'this': 'that', '_id': 'test2'},
@@ -227,7 +230,7 @@ class Store(list):
 def load(filename):
     """Returns a data_store loaded from a file to which it
     was persisted
-    
+
     >>> store = Store([
     ...     {'this': 'that', '_id': 'test1'},
     ...     {'this': 'that', '_id': 'test2'},
