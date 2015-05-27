@@ -27,11 +27,29 @@ import uuid
 import pickle
 import bottle
 from threading import RLock
+import base64
+from itertools import cycle, izip
 
-LOCKS = {}
+
+def encrypt(string, key="_"):
+    """Return the base64 encoded XORed version of string. This is XORed with
+    key which defaults to a single underscore."""
+    return base64.encodestring(
+        ''.join(
+            chr(ord(c) ^ ord(k)) for c, k in izip(string, cycle(key)))).strip()
+
+
+def decrypt(string, key="_"):
+    """Returns the base64 decoded, XORed version of string. This is XORed with
+    key, which defaults to a single underscore"""
+    string = base64.decodestring(string)
+    return ''.join(
+        chr(ord(c) ^ ord(k)) for c, k in izip(string, cycle(key))).strip()
 
 class ResultList(list):
     pass
+
+LOCKS = {}
 
 class Store(list):
     def __init__(self, records=None):
@@ -136,7 +154,7 @@ class Store(list):
             self.remove(record)
         return records
 
-    def find_one(self, desc, sanitize_list=None):
+    def find_one(self, desc, sanitize_list=None, encrypt_list=None, password="_"):
         """Returns one record matching desc, if more than one record
         matches desc returns the first one.
 
@@ -176,14 +194,20 @@ class Store(list):
                     if not value == item[key]:
                         break
             else:
-                _item = item
+                # Needed to account for changing the actual store,
+                # Rather than just sanitizing the ResultList
+                _item = item.copy()
                 if sanitize_list:
                     for key in sanitize_list:
                         if item.get(key, None):
                             _item[key] = "*" * 8
+                if encrypt_list:
+                    for field in encrypt_list:
+                        if item.get(field, None):
+                            _item[field] = encrypt(_item[field], key=password)
                 return _item
 
-    def find(self, desc, sanitize_list=None, order_by=None):
+    def find(self, desc, sanitize_list=None, encrypt_list=None, password="_", order_by=None):
         """Returns a ResultList containing records matching
         desc. If sanitize_list is specified it should be an iterable
         yielding keys of fields you would like sanitized. Those fields
@@ -220,6 +244,10 @@ class Store(list):
                 for field in sanitize_list:
                     if record.get(field, None):
                         ret[index][field] = "*" * 8
+            if encrypt_list:
+                for field in encrypt_list:
+                    if record.get(field, None):
+                        ret[index][field] = encrypt(ret[index][field], key=password)
         if order_by is not None:
             ret = sorted(ret, key=lambda k: k[order_by])
         return Store(ret)

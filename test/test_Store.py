@@ -2,7 +2,7 @@ import sys
 import os
 import tempfile
 sys.path.insert(0, os.getcwd())
-from data.store import Store
+from data.store import Store, decrypt
 import pytest
 import data.store
 
@@ -96,6 +96,25 @@ def test_Store_dot_group_by_returns_a_dict_of_Stores_grouped_by_field():
         assert isinstance(store, Store)
         for record in store:
             assert record["this"] == key
+
+
+def test_find_accepts_argument_to_encrypt_fields():
+    store = _create_store()
+    results = store.find({}, encrypt_list=["this"], password="password")
+    assert isinstance(results, Store)
+    for index, record in enumerate(results):
+        assert record["this"] != store[index]["this"]
+        assert decrypt(record["this"], key="password") == store[index]["this"]
+
+
+def test_find_one_accepts_argument_to_encrypt_fields():
+    store = _create_store()
+    record = store.find_one(
+        {"that": "foo"},
+        encrypt_list=["this"],
+        password="password")
+    assert record["this"] != store.find_one({"that": "foo"})["this"]
+    assert decrypt(record["this"], key="password") == store.find_one({"that": "foo"})["this"]
 
 
 def test_add_record_adds_a_record():
