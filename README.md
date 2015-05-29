@@ -47,16 +47,39 @@ store = data.store.Store([
 # Find based on value
 results = store.find({"name": "John Doe"})  # One record
 
+# Find based on value and sort by name
+results = store.find({"name": "John Doe"}, order_by="name")  # One record
+
 # Find based on regex
 import re
 regex = re.compile(r"j.*?@\w+\.com")
 results = store.find({"email": regex}) # Two records
+
+# Filter records based on value
+results = store.filter({"name": "John Doe"})
+
+# Filter records based on callable
+results = store.filter({"email": lambda x: x.startswith("r")})
+
+# Filter records based on regex
+import re
+regex = re.compile(r"j.*?@\w+\.com")
+results = store.filter({"email": regex})
+
+# Find based on regex and sort based on email
+results = store.find({"email": regex}, order_by="email")
 
 # limiting to one result
 results = store.find_one({"email": regex}) # One Records
 
 # find based on callable
 results = store.find({"email": lambda x: x.startswith("r")})  # One Record
+
+# Sort a store by email
+srtd = store.sort(by="email")
+
+# Group by field
+groups = store.group_by("name")
 
 # Add a record
 store.add_record({"name": "ilovetux", "email": "me@ilovetux.com"})
@@ -73,10 +96,23 @@ store.persist("/var/data/users.db")
 # Load a persisted store
 store2 = data.store.load("/var/data/users.db")
 
+# Persist the store encrypted with a password
+store.persist("/var/data/users.db", password="password")
+
+# Load an encrypted persisted store
+store2 = data.store.load("/var/data/users.db", password="password")
+
 # Find a set of records and sanitize a field on them
 store2.find(
     {"email": lambda x: x.startswith("m")},
     sanitize_list=["email"])
+
+# Find a set of records and encrypt a field on them
+store2.find(
+    {"email": lambda x: x.startswith("m")},
+    encrypt_list=["email"],
+    password="password")
+
 ```
 
 ## The REST API
