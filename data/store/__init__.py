@@ -20,12 +20,8 @@ This module provide an easy api to a generic schema-less data_store.
 
 ## Load persisted data_store
 """
-import os
-import sys
-import json
 import uuid
 import pickle
-import bottle
 from cStringIO import StringIO
 from threading import RLock
 import base64
@@ -97,9 +93,31 @@ class Store(list):
         return record
 
     def sort(self, by="_id"):
+        """Return a sorted Store. The records in the returned Store
+        will be sorted by the field named in by.
+
+        >>> store = Store([
+        ...     {"this": "b"},
+        ...     {"this": "a"}])
+        >>> srtd = store.sort(by="this")
+        >>> print srtd[0]["this"]
+        a
+        """
         return self.find({}, order_by=by)
 
     def filter(self, desc):
+        """Returns a Store where any records matching desc is removed.
+        This is functionally the oposite of find.
+
+        >>> store = Store([
+        ...     {"this": "b"},
+        ...     {"this": "a"}])
+        >>> filtered = store.filter({"this": "a"})
+        >>> print len(filtered)
+        1
+        >>> print filtered[0]["this"]
+        b
+        """
         matches = self.find(desc)
         ret = self.find({})
         for match in list(matches):
@@ -107,6 +125,23 @@ class Store(list):
         return ret
 
     def group_by(self, by):
+        """Returns a dict containing the values of by for the keys and
+        Stores for the values where the field referenced in by matches
+        the key.
+
+        >>> store = Store([
+        ...     {"this": "a"},
+        ...     {"this": "a"},
+        ...     {"this": "b"},
+        ...     {"this": "b"},
+        ...     {"this": "c"},
+        ...     {"this": "c"}])
+        >>> groups = store.group_by("this")
+        >>> print len(groups.keys())
+        3
+        >>> print len(groups["a"])
+        2
+        """
         groups = {}
         for record in self:
             if record[by] in groups:
