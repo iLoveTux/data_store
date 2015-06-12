@@ -105,7 +105,7 @@ class Store(list):
         """
         return self.find({}, order_by=by)
 
-    def filter(self, desc):
+    def filter(self, desc, sanitize_list=None, encrypt_list=None, password="_", order_by=None):
         """Returns a Store where any records matching desc is removed.
         This is functionally the oposite of find.
 
@@ -119,7 +119,12 @@ class Store(list):
         b
         """
         matches = self.find(desc)
-        ret = self.find({})
+        ret = self.find(
+            desc={},
+            sanitize_list=sanitize_list,
+            encrypt_list=encrypt_list,
+            password=password,
+            order_by=order_by)
         for match in list(matches):
             ret.del_record({"_id": match["_id"]})
         return ret

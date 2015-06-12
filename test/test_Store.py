@@ -98,6 +98,16 @@ def test_Store_dot_filter_returns_new_store_with_matching_records_removed():
     assert len(filtered) == (len(store) - 1)
     assert len(filtered.find({"this": "bar"})) == 0
 
+def test_Store_dot_filter_uses_all_of_finds_functionality():
+    store = _create_store()
+    filtered = store.filter({"this": "bar"},
+                            sanitize_list=["that"],
+                            encrypt_list=["this"],
+                            password="password",
+                            order_by="that")
+    assert isinstance(filtered, Store)
+    assert len(filtered) == (len(store) - 1)
+    assert len(filtered.find({"this": "that"})) == 0
 
 def test_Store_dot_group_by_returns_a_dict_of_Stores_grouped_by_field():
     """Tests that the Store's group_by method returns a dict
