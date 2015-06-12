@@ -145,6 +145,13 @@ def test_find_one_accepts_argument_to_encrypt_fields():
     assert record["this"] != store.find_one({"that": "foo"})["this"]
     assert decrypt(record["this"], key="password") == store.find_one({"that": "foo"})["this"]
 
+def test_find_and_find_one_can_encrypt_ints():
+    store = _create_store()
+    for index, record in enumerate(store):
+        record["integer"] = index
+    encrypted = store.find({}, encrypt_list=["integer"], password="password")
+    for index, record in enumerate(encrypted):
+        assert not isinstance(record["integer"], int)
 
 def test_add_record_adds_a_record():
     """Tests that the Store's add_record method adds a record to Store."""

@@ -287,8 +287,8 @@ class Store(list):
                         ret[index][field] = "*" * 8
             if encrypt_list:
                 for field in encrypt_list:
-                    if record.get(field, None):
-                        ret[index][field] = encrypt(ret[index][field], key=password)
+                    if str(record.get(field, None)):
+                        ret[index][field] = encrypt(str(ret[index][field]), key=password)
         if order_by is not None:
             ret = sorted(ret, key=lambda k: k[order_by])
         return Store(ret)
