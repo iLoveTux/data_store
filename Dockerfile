@@ -5,7 +5,8 @@ RUN dnf clean all
 RUN dnf -y -4 update
 RUN dnf -y -4 install python-pip python-cherrypy
 RUN pip install data.store
-ADD start_server /opt/
+
+ADD start_serveri.py /opt/
 
 EXPOSE 8080
 
