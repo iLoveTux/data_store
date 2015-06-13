@@ -6,7 +6,6 @@ from data.store import Store, decrypt
 import pytest
 import data.store
 
-
 def _create_store():
     """Simple helper function which creates a Store with some initial
     values and returns it."""
