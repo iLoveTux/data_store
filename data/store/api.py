@@ -68,20 +68,19 @@ def delete_record(collection):
     return record
 
 
-@api.route("/collections/<collection>/records/_id", method="PUT")
+@api.route("/collections/<collection>/records/<_id>", method="PUT")
 def update_record(collection, _id):
     """Updates a record with _id in collection."""
     global collections
+    with open("/tmp/api.log", "w") as fout:
+        fout.write("here {} {}".format(collection, _id))
     if collection not in collections:
-        print "collection not found"
         bottle.abort(404)
     if _id is None:
-        print "_id was none"
         bottle.abort(404, text="record not found")
 
     record = collections[collection].find({"_id": _id})
     if len(record) != 1:
-        print "len(record) != 1"
         bottle.abort(404, text="one unique record could not be located.")
 
     record = record[0]
