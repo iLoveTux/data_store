@@ -48,6 +48,7 @@ def get_records(collection):
     if collection not in collections:
         bottle.abort(404)
     desc = bottle.request.query
+    bottle.response.content_type = "application/json"
     return collections[collection].find(desc)
 
 
