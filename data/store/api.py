@@ -73,12 +73,15 @@ def update_record(collection, _id):
     """Updates a record with _id in collection."""
     global collections
     if collection not in collections:
-        bottle.abort(404, text="collection not found")
+        print "collection not found"
+        bottle.abort(404)
     if _id is None:
+        print "_id was none"
         bottle.abort(404, text="record not found")
 
     record = collections[collection].find({"_id": _id})
     if len(record) != 1:
+        print "len(record) != 1"
         bottle.abort(404, text="one unique record could not be located.")
 
     record = record[0]
