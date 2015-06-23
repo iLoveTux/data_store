@@ -68,13 +68,13 @@ def delete_record(collection):
 def update_record(collection, _id):
     """Updates a record with _id in collection."""
     if collection not in collections:
-        bottle.abort(404)
+        bottle.abort(404, text="collection not found")
     if _id is None:
-        bottle.abort(404)
+        bottle.abort(404, text="record not found")
 
     record = collections[collection].find({"_id": _id})
     if len(record) != 1:
-        bottle.abort(404)
+        bottle.abort(404, text="one unique record could not be located.")
 
     record = record[0]
     body = json.loads(bottle.request.body.read())
