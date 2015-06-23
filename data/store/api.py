@@ -26,6 +26,7 @@ def post_collection(collection):
 @api.route("/collections/<collection>", method="DELETE")
 def del_collection(collection):
     """Deletes a collection"""
+    global collections
     if collection not in collections:
         bottle.abort(404)
     ret = collections[collection]
@@ -36,6 +37,7 @@ def del_collection(collection):
 @api.route("/collections/<collection>/records", method="POST")
 def post_record(collection):
     """Adds a record to collection"""
+    global collections
     if collection not in collections:
         bottle.abort(404)
     record = bottle.request.json
@@ -45,6 +47,7 @@ def post_record(collection):
 @api.route("/collections/<collection>/records")
 def get_records(collection):
     """Search collection for records"""
+    global collections
     if collection not in collections:
         bottle.abort(404)
     desc = bottle.request.query
@@ -57,6 +60,7 @@ def delete_record(collection):
     """Delete a record from collection. A ValueError
     will be raised if there are more than one matching
     record"""
+    global collections
     if collection not in collections:
         bottle.abort(404)
     desc = bottle.request.query
@@ -67,6 +71,7 @@ def delete_record(collection):
 @api.route("/collections/<collection>/records/_id", method="PUT")
 def update_record(collection, _id):
     """Updates a record with _id in collection."""
+    global collections
     if collection not in collections:
         bottle.abort(404, text="collection not found")
     if _id is None:
