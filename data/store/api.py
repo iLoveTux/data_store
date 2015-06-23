@@ -6,11 +6,13 @@ api = bottle.Bottle(__name__)
 
 collections = {}
 
+
 @api.route("/collections")
 def get_collections():
     """Returns a list of collections."""
     global collections
     return collections
+
 
 @api.route("/collections/<collection>", method="POST")
 def post_collection(collection):
@@ -20,13 +22,17 @@ def post_collection(collection):
     collections[collection] = new_collection
     return new_collection
 
+
 @api.route("/collections/<collection>", method="DELETE")
 def del_collection(collection):
     """Deletes a collection"""
     if collection not in collections:
         bottle.abort(404)
+    ret = collections[collection]
     del collections[collection]
-    
+    return ret
+
+
 @api.route("/collections/<collection>/records", method="POST")
 def post_record(collection):
     """Adds a record to collection"""
@@ -34,6 +40,7 @@ def post_record(collection):
         bottle.abort(404)
     record = bottle.request.json
     collections[collection].add_record(record)
+
 
 @api.route("/collections/<collection>/records")
 def get_records(collection):
@@ -43,6 +50,7 @@ def get_records(collection):
     desc = bottle.request.query
     return collections[collection].find(desc)
 
+
 @api.route("/collections/<collection>/records", method="DELETE")
 def delete_record(collection):
     """Delete a record from collection. A ValueError
@@ -51,9 +59,10 @@ def delete_record(collection):
     if collection not in collections:
         bottle.abort(404)
     desc = bottle.request.query
-    records = collections[collection].del_record(desc)
-    return records
-    
+    record = collections[collection].del_record(desc)
+    return record
+
+
 @api.route("/collections/<collection>/records/_id", method="PUT")
 def update_record(collection, _id=None):
     """Updates a record with _id in collection."""
