@@ -30,4 +30,4 @@ class Client(object):
 
     def update_record(self, collection, _id, updates):
         url = "{}/{}/records/{}".format(self.base_url, collection, _id)
-        return requests.put(url, data=updates).json()
+        return requests.put(url, json=updates)

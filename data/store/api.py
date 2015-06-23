@@ -65,7 +65,7 @@ def delete_record(collection):
 
 
 @api.route("/collections/<collection>/records/_id", method="PUT")
-def update_record(collection, _id=None):
+def update_record(collection, _id):
     """Updates a record with _id in collection."""
     if collection not in collections:
         bottle.abort(404)
