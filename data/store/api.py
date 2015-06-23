@@ -49,7 +49,7 @@ def get_records(collection):
         bottle.abort(404)
     desc = bottle.request.query
     bottle.response.content_type = "application/json"
-    return collections[collection].find(desc)
+    return str(collections[collection].find(desc))
 
 
 @api.route("/collections/<collection>/records", method="DELETE")
