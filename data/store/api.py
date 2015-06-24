@@ -20,7 +20,7 @@ def post_collection(collection):
     global collections
     new_collection = data.store.Store()
     collections[collection] = new_collection
-    return new_collection
+    return json.dumps(new_collection)
 
 
 @api.route("/collections/<collection>", method="DELETE")
@@ -31,7 +31,7 @@ def del_collection(collection):
         bottle.abort(404)
     ret = collections[collection]
     del collections[collection]
-    return ret
+    return json.dumps(ret)
 
 
 @api.route("/collections/<collection>/records", method="POST")
@@ -42,6 +42,7 @@ def post_record(collection):
         bottle.abort(404)
     record = bottle.request.json
     collections[collection].add_record(record)
+    return json.dumps(record)
 
 
 @api.route("/collections/<collection>/records")
@@ -52,7 +53,7 @@ def get_records(collection):
         bottle.abort(404)
     desc = bottle.request.query
     bottle.response.content_type = "application/json"
-    return str(collections[collection].find(desc))
+    return json.dumps(collections[collection].find(desc))
 
 
 @api.route("/collections/<collection>/records", method="DELETE")
@@ -65,7 +66,7 @@ def delete_record(collection):
         bottle.abort(404)
     desc = bottle.request.query
     record = collections[collection].del_record(desc)
-    return record
+    return json.dumps(record)
 
 
 @api.route("/collections/<collection>/records/<_id>", method="PUT")
@@ -89,4 +90,4 @@ def update_record(collection, _id):
         record[key] = value
     collections[collection].del_record({"_id": _id})
     collections[collection].add_record(record)
-    return record
+    return json.dumps(record)

@@ -1,4 +1,5 @@
 import requests
+from store import Store
 
 
 class Client(object):
@@ -10,19 +11,19 @@ class Client(object):
 
     def create_collection(self, name):
         url = "{}/{}".format(self.base_url, name)
-        return requests.post(url)
+        return requests.post(url).json()
 
     def del_collection(self, name):
         url = "{}/{}".format(self.base_url, name)
-        return requests.delete(url)
+        return requests.delete(url).json()
 
     def add_record(self, collection, record):
         url = "{}/{}/records".format(self.base_url, collection)
-        return requests.post(url, json=record)
+        return requests.post(url, json=record).json()
 
     def get_records(self, collection, desc):
         url = "{}/{}/records".format(self.base_url, collection)
-        return requests.get(url, params=desc)
+        return Store(requests.get(url, params=desc).json())
 
     def del_record(self, collection, desc):
         url = "{}/{}/records".format(self.base_url, collection)
@@ -30,4 +31,4 @@ class Client(object):
 
     def update_record(self, collection, _id, updates):
         url = "{}/{}/records/{}".format(self.base_url, collection, _id)
-        return requests.put(url, json=updates)
+        return requests.put(url, json=updates).json()
