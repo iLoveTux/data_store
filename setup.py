@@ -12,5 +12,5 @@ setup(name='data.store',
       url='https://github.com/iLoveTux/data_store',
       packages=['data', 'data.store'],
       license="GPL v2",
-      install_requires=["bottle == 0.12.8"]
+      install_requires=["bottle == 0.12.20"]
      )
